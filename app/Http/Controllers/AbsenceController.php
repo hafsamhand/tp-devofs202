@@ -43,7 +43,7 @@ class AbsenceController extends Controller
      */
     public function store(Request $request)
     {
-        return 'test';
+        //
     }
 
     /**
@@ -51,7 +51,7 @@ class AbsenceController extends Controller
      */
     public function show(Absence $absence)
     {
-        //
+        return $absence;
     }
 
     /**
