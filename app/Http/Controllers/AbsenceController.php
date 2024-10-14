@@ -59,7 +59,8 @@ class AbsenceController extends Controller
      */
     public function edit(Absence $absence)
     {
-        //
+        $a = $absence->nom;
+        return $a;
     }
 
     /**
