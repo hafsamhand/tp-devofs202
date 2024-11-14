@@ -6,6 +6,7 @@ use App\Imports\AbsencesImport;
 use App\Models\Absence;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Month;
 
@@ -49,9 +50,38 @@ class AbsenceController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Absence $absence)
+    public function show($groupe)
     {
-        //
+        $data = Absence::where('groupe', strtoupper($groupe))->get()->groupBy('nom');
+        $newdata = collect();
+        foreach ($data as $key => $value) {
+            $collection = collect($value);
+            $grouped = $collection->groupBy('date_absence');
+ 
+            $newdata->push($grouped->all()) ;
+        }
+        $result = DB::table('absences')
+        ->select('nom', DB::raw("DATE_FORMAT(date_absence, '%Y-%m') AS month"), DB::raw('COUNT(*) AS absence_count'))
+        ->where('groupe', $groupe)
+        ->where('nom', '!=', 'Aucune Absence')
+        ->groupBy('nom','month')
+        ->orderBy('nom')
+        ->get();
+
+            //         SELECT 
+            //     a.nom, 
+            //     DATE_FORMAT(a.date_absence, '%Y-%m') AS month,
+            //     COUNT(*) AS absence_count
+            // FROM 
+            //     tpdevofs202.absences a 
+            // GROUP BY 
+            //     1, 2
+            // ORDER BY 
+            //     1;
+        
+        // return view('absences.show', ['absences' => $result]);
+
+        return $result;
     }
 
     /**
